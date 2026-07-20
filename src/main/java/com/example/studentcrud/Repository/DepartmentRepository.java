@@ -1,0 +1,9 @@
+package com.example.studentcrud.Repository;
+
+import com.example.studentcrud.Entity.Department;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface DepartmentRepository extends JpaRepository<Department,Long> {
+
+
+}
