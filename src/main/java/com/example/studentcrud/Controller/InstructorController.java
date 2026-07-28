@@ -1,8 +1,10 @@
 package com.example.studentcrud.Controller;
 
 import com.example.studentcrud.Controller.dto.InstructorRequest;
+import com.example.studentcrud.Controller.dto.InstructorResponse;
 import com.example.studentcrud.Entity.Instructor;
 import com.example.studentcrud.Service.InstructorService;
+import com.example.studentcrud.Mapper.EntityToResponseMapper;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,31 +21,31 @@ public class InstructorController {
     private InstructorService instructorService;
 
     @PostMapping
-    public ResponseEntity<Instructor> saveInstructor(@Valid @RequestBody InstructorRequest req) {
+    public ResponseEntity<InstructorResponse> saveInstructor(@Valid @RequestBody InstructorRequest req) {
         Instructor instructor = new Instructor();
         instructor.setName(req.getName());
         instructor.setEmail(req.getEmail());
         Instructor savedInstructor = instructorService.saveInstructor(instructor);
-        return new ResponseEntity<>(savedInstructor, HttpStatus.CREATED);
+        return new ResponseEntity<>(EntityToResponseMapper.toInstructorResponse(savedInstructor), HttpStatus.CREATED);
     }
 
     @GetMapping
-    public ResponseEntity<List<Instructor>> getAllInstructors() {
-        return new ResponseEntity<>(instructorService.getAllInstructors(), HttpStatus.OK);
+    public ResponseEntity<List<InstructorResponse>> getAllInstructors() {
+        return new ResponseEntity<>(EntityToResponseMapper.toInstructorResponseList(instructorService.getAllInstructors()), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Instructor> getById(@PathVariable Long id) {
-        return new ResponseEntity<>(instructorService.getByInstructorId(id), HttpStatus.OK);
+    public ResponseEntity<InstructorResponse> getById(@PathVariable Long id) {
+        return new ResponseEntity<>(EntityToResponseMapper.toInstructorResponse(instructorService.getByInstructorId(id)), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Instructor> updateInstructor(@PathVariable Long id,
+    public ResponseEntity<InstructorResponse> updateInstructor(@PathVariable Long id,
                                                        @Valid @RequestBody InstructorRequest req) {
         Instructor instructor = new Instructor();
         instructor.setName(req.getName());
         instructor.setEmail(req.getEmail());
-        return new ResponseEntity<>(instructorService.updateInstructor(id, instructor), HttpStatus.OK);
+        return new ResponseEntity<>(EntityToResponseMapper.toInstructorResponse(instructorService.updateInstructor(id, instructor)), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

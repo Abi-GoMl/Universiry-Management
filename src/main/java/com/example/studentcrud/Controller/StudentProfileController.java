@@ -1,10 +1,12 @@
 package com.example.studentcrud.Controller;
 
 import com.example.studentcrud.Controller.dto.StudentProfileRequest;
+import com.example.studentcrud.Controller.dto.StudentProfileResponse;
 import com.example.studentcrud.Entity.Student;
 import com.example.studentcrud.Entity.StudentProfile;
 import com.example.studentcrud.Service.StudentProfileService;
 import com.example.studentcrud.Service.StudentService;
+import com.example.studentcrud.Mapper.EntityToResponseMapper;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,7 +26,7 @@ public class StudentProfileController {
     private StudentService studentService;
 
     @PostMapping
-    public ResponseEntity<StudentProfile> saveStudentProfile(@Valid @RequestBody StudentProfileRequest req) {
+    public ResponseEntity<StudentProfileResponse> saveStudentProfile(@Valid @RequestBody StudentProfileRequest req) {
         StudentProfile profile = new StudentProfile();
         profile.setMarks(req.getMarks());
         profile.setAddress(req.getAddress());
@@ -33,21 +35,21 @@ public class StudentProfileController {
             profile.setStudent(s);
         }
         StudentProfile savedStudentProfile = studentProfileService.saveStudentProfile(profile);
-        return new ResponseEntity<>(savedStudentProfile, HttpStatus.CREATED);
+        return new ResponseEntity<>(EntityToResponseMapper.toStudentProfileResponse(savedStudentProfile), HttpStatus.CREATED);
     }
 
     @GetMapping
-    public ResponseEntity<List<StudentProfile>> getAllStudentProfiles() {
-        return new ResponseEntity<>(studentProfileService.getAllStudentProfiles(), HttpStatus.OK);
+    public ResponseEntity<List<StudentProfileResponse>> getAllStudentProfiles() {
+        return new ResponseEntity<>(EntityToResponseMapper.toStudentProfileResponseList(studentProfileService.getAllStudentProfiles()), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<StudentProfile> getById(@PathVariable Long id) {
-        return new ResponseEntity<>(studentProfileService.getById(id), HttpStatus.OK);
+    public ResponseEntity<StudentProfileResponse> getById(@PathVariable Long id) {
+        return new ResponseEntity<>(EntityToResponseMapper.toStudentProfileResponse(studentProfileService.getById(id)), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<StudentProfile> updateStudentProfile(@PathVariable Long id,
+    public ResponseEntity<StudentProfileResponse> updateStudentProfile(@PathVariable Long id,
                                                                @Valid @RequestBody StudentProfileRequest req) {
         StudentProfile profile = new StudentProfile();
         profile.setMarks(req.getMarks());
@@ -56,7 +58,7 @@ public class StudentProfileController {
             Student s = studentService.getByStudentId(req.getStudentId());
             profile.setStudent(s);
         }
-        return new ResponseEntity<>(studentProfileService.updateStudentProfile(id, profile), HttpStatus.OK);
+        return new ResponseEntity<>(EntityToResponseMapper.toStudentProfileResponse(studentProfileService.updateStudentProfile(id, profile)), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

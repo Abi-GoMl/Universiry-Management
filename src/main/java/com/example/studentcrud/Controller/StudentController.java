@@ -1,8 +1,10 @@
 package com.example.studentcrud.Controller;
 
 import com.example.studentcrud.Controller.dto.StudentRequest;
+import com.example.studentcrud.Controller.dto.StudentResponse;
 import com.example.studentcrud.Entity.Student;
 import com.example.studentcrud.Service.StudentService;
+import com.example.studentcrud.Mapper.EntityToResponseMapper;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,32 +20,32 @@ public class StudentController {
     private StudentService studentService;
 
     @PostMapping
-    public ResponseEntity<Student> saveStudent(@Valid @RequestBody StudentRequest req) {
+    public ResponseEntity<StudentResponse> saveStudent(@Valid @RequestBody StudentRequest req) {
         Student s = new Student();
         s.setName(req.getName());
         s.setEmail(req.getEmail());
         s.setAge(req.getAge());
         Student savedstudent = studentService.saveStudent(s);
-        return new ResponseEntity<>(savedstudent, HttpStatus.CREATED);
+        return new ResponseEntity<>(EntityToResponseMapper.toStudentResponse(savedstudent), HttpStatus.CREATED);
     }
 
     @GetMapping
-    public ResponseEntity<List<Student>> getAllStudents() {
-        return new ResponseEntity<>(studentService.getAllStudents(),HttpStatus.OK);
+    public ResponseEntity<List<StudentResponse>> getAllStudents() {
+        return new ResponseEntity<>(EntityToResponseMapper.toStudentResponseList(studentService.getAllStudents()),HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Student> getById(@PathVariable Long id) {
-        return new ResponseEntity<>(studentService.getByStudentId(id),HttpStatus.OK);
+    public ResponseEntity<StudentResponse> getById(@PathVariable Long id) {
+        return new ResponseEntity<>(EntityToResponseMapper.toStudentResponse(studentService.getByStudentId(id)),HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Student> updateStudent(@PathVariable Long id, @Valid @RequestBody StudentRequest req) {
+    public ResponseEntity<StudentResponse> updateStudent(@PathVariable Long id, @Valid @RequestBody StudentRequest req) {
         Student s = new Student();
         s.setName(req.getName());
         s.setEmail(req.getEmail());
         s.setAge(req.getAge());
-        return new ResponseEntity<>(studentService.updateStudent(id,s),HttpStatus.OK);
+        return new ResponseEntity<>(EntityToResponseMapper.toStudentResponse(studentService.updateStudent(id,s)),HttpStatus.OK);
     }
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteStudent(@PathVariable Long id) {

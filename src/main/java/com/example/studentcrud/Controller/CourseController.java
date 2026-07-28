@@ -1,10 +1,12 @@
 package com.example.studentcrud.Controller;
 
 import com.example.studentcrud.Controller.dto.CourseRequest;
+import com.example.studentcrud.Controller.dto.CourseResponse;
 import com.example.studentcrud.Entity.Course;
 import com.example.studentcrud.Entity.Department;
 import com.example.studentcrud.Entity.Instructor;
 import com.example.studentcrud.Service.CourseService;
+import com.example.studentcrud.Mapper.EntityToResponseMapper;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,7 +23,7 @@ public class CourseController {
     private CourseService courseService;
 
     @PostMapping
-    public ResponseEntity<Course> saveCourse(@Valid @RequestBody CourseRequest req) {
+    public ResponseEntity<CourseResponse> saveCourse(@Valid @RequestBody CourseRequest req) {
         Course course = new Course();
         course.setName(req.getName());
         course.setCredits(req.getCredits());
@@ -33,21 +35,21 @@ public class CourseController {
             Instructor i = new Instructor(); i.setId(req.getInstructorId()); course.setInstructor(i);
         }
         Course savedCourse = courseService.saveCourse(course);
-        return new ResponseEntity<>(savedCourse, HttpStatus.CREATED);
+        return new ResponseEntity<>(EntityToResponseMapper.toCourseResponse(savedCourse), HttpStatus.CREATED);
     }
 
     @GetMapping
-    public ResponseEntity<List<Course>> getAllCourses() {
-        return new ResponseEntity<>(courseService.getAllCourses(), HttpStatus.OK);
+    public ResponseEntity<List<CourseResponse>> getAllCourses() {
+        return new ResponseEntity<>(EntityToResponseMapper.toCourseResponseList(courseService.getAllCourses()), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Course> getById(@PathVariable Long id) {
-        return new ResponseEntity<>(courseService.getByCourseId(id), HttpStatus.OK);
+    public ResponseEntity<CourseResponse> getById(@PathVariable Long id) {
+        return new ResponseEntity<>(EntityToResponseMapper.toCourseResponse(courseService.getByCourseId(id)), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Course> updateCourse(@PathVariable Long id,
+    public ResponseEntity<CourseResponse> updateCourse(@PathVariable Long id,
                                                @Valid @RequestBody CourseRequest req) {
         Course course = new Course();
         course.setName(req.getName());
@@ -59,7 +61,7 @@ public class CourseController {
         if (req.getInstructorId() != null) {
             Instructor i = new Instructor(); i.setId(req.getInstructorId()); course.setInstructor(i);
         }
-        return new ResponseEntity<>(courseService.updateCourse(id, course), HttpStatus.OK);
+        return new ResponseEntity<>(EntityToResponseMapper.toCourseResponse(courseService.updateCourse(id, course)), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
