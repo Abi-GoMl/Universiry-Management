@@ -1,7 +1,10 @@
 package com.example.studentcrud.Controller;
 
+import com.example.studentcrud.Controller.dto.StudentProfileRequest;
+import com.example.studentcrud.Entity.Student;
 import com.example.studentcrud.Entity.StudentProfile;
 import com.example.studentcrud.Service.StudentProfileService;
+import com.example.studentcrud.Service.StudentService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,9 +20,19 @@ public class StudentProfileController {
     @Autowired
     private StudentProfileService studentProfileService;
 
+    @Autowired
+    private StudentService studentService;
+
     @PostMapping
-    public ResponseEntity<StudentProfile> saveStudentProfile(@Valid @RequestBody StudentProfile studentProfile) {
-        StudentProfile savedStudentProfile = studentProfileService.saveStudentProfile(studentProfile);
+    public ResponseEntity<StudentProfile> saveStudentProfile(@Valid @RequestBody StudentProfileRequest req) {
+        StudentProfile profile = new StudentProfile();
+        profile.setMarks(req.getMarks());
+        profile.setAddress(req.getAddress());
+        if (req.getStudentId() != null) {
+            Student s = studentService.getByStudentId(req.getStudentId());
+            profile.setStudent(s);
+        }
+        StudentProfile savedStudentProfile = studentProfileService.saveStudentProfile(profile);
         return new ResponseEntity<>(savedStudentProfile, HttpStatus.CREATED);
     }
 
@@ -35,8 +48,15 @@ public class StudentProfileController {
 
     @PutMapping("/{id}")
     public ResponseEntity<StudentProfile> updateStudentProfile(@PathVariable Long id,
-                                                               @Valid @RequestBody StudentProfile studentProfile) {
-        return new ResponseEntity<>(studentProfileService.updateStudentProfile(id, studentProfile), HttpStatus.OK);
+                                                               @Valid @RequestBody StudentProfileRequest req) {
+        StudentProfile profile = new StudentProfile();
+        profile.setMarks(req.getMarks());
+        profile.setAddress(req.getAddress());
+        if (req.getStudentId() != null) {
+            Student s = studentService.getByStudentId(req.getStudentId());
+            profile.setStudent(s);
+        }
+        return new ResponseEntity<>(studentProfileService.updateStudentProfile(id, profile), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

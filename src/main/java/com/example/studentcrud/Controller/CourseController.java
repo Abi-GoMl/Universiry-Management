@@ -1,6 +1,9 @@
 package com.example.studentcrud.Controller;
 
+import com.example.studentcrud.Controller.dto.CourseRequest;
 import com.example.studentcrud.Entity.Course;
+import com.example.studentcrud.Entity.Department;
+import com.example.studentcrud.Entity.Instructor;
 import com.example.studentcrud.Service.CourseService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +21,17 @@ public class CourseController {
     private CourseService courseService;
 
     @PostMapping
-    public ResponseEntity<Course> saveCourse(@Valid @RequestBody Course course) {
+    public ResponseEntity<Course> saveCourse(@Valid @RequestBody CourseRequest req) {
+        Course course = new Course();
+        course.setName(req.getName());
+        course.setCredits(req.getCredits());
+        course.setSemester(req.getSemester());
+        if (req.getDepartmentId() != null) {
+            Department d = new Department(); d.setId(req.getDepartmentId()); course.setDepartment(d);
+        }
+        if (req.getInstructorId() != null) {
+            Instructor i = new Instructor(); i.setId(req.getInstructorId()); course.setInstructor(i);
+        }
         Course savedCourse = courseService.saveCourse(course);
         return new ResponseEntity<>(savedCourse, HttpStatus.CREATED);
     }
@@ -35,7 +48,17 @@ public class CourseController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Course> updateCourse(@PathVariable Long id,
-                                               @Valid @RequestBody Course course) {
+                                               @Valid @RequestBody CourseRequest req) {
+        Course course = new Course();
+        course.setName(req.getName());
+        course.setCredits(req.getCredits());
+        course.setSemester(req.getSemester());
+        if (req.getDepartmentId() != null) {
+            Department d = new Department(); d.setId(req.getDepartmentId()); course.setDepartment(d);
+        }
+        if (req.getInstructorId() != null) {
+            Instructor i = new Instructor(); i.setId(req.getInstructorId()); course.setInstructor(i);
+        }
         return new ResponseEntity<>(courseService.updateCourse(id, course), HttpStatus.OK);
     }
 

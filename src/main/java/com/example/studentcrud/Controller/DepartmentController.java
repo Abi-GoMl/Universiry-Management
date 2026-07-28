@@ -1,5 +1,6 @@
 package com.example.studentcrud.Controller;
 
+import com.example.studentcrud.Controller.dto.DepartmentRequest;
 import com.example.studentcrud.Entity.Department;
 import com.example.studentcrud.Service.DepartmentService;
 import jakarta.validation.Valid;
@@ -18,7 +19,10 @@ public class DepartmentController {
     private DepartmentService departmentService;
 
     @PostMapping
-    public ResponseEntity<Department> saveDepartment(@Valid @RequestBody Department department) {
+    public ResponseEntity<Department> saveDepartment(@Valid @RequestBody DepartmentRequest req) {
+        Department department = new Department();
+        department.setName(req.getName());
+        department.setHod(req.getHod());
         Department savedDepartment = departmentService.saveDepartment(department);
         return new ResponseEntity<>(savedDepartment, HttpStatus.CREATED);
     }
@@ -35,7 +39,10 @@ public class DepartmentController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Department> updateDepartment(@PathVariable Long id,
-                                                       @Valid @RequestBody Department department) {
+                                                       @Valid @RequestBody DepartmentRequest req) {
+        Department department = new Department();
+        department.setName(req.getName());
+        department.setHod(req.getHod());
         return new ResponseEntity<>(departmentService.updateDepartment(id, department), HttpStatus.OK);
     }
 

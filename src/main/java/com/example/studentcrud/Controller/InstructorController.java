@@ -1,5 +1,6 @@
 package com.example.studentcrud.Controller;
 
+import com.example.studentcrud.Controller.dto.InstructorRequest;
 import com.example.studentcrud.Entity.Instructor;
 import com.example.studentcrud.Service.InstructorService;
 import jakarta.validation.Valid;
@@ -18,7 +19,10 @@ public class InstructorController {
     private InstructorService instructorService;
 
     @PostMapping
-    public ResponseEntity<Instructor> saveInstructor(@Valid @RequestBody Instructor instructor) {
+    public ResponseEntity<Instructor> saveInstructor(@Valid @RequestBody InstructorRequest req) {
+        Instructor instructor = new Instructor();
+        instructor.setName(req.getName());
+        instructor.setEmail(req.getEmail());
         Instructor savedInstructor = instructorService.saveInstructor(instructor);
         return new ResponseEntity<>(savedInstructor, HttpStatus.CREATED);
     }
@@ -35,7 +39,10 @@ public class InstructorController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Instructor> updateInstructor(@PathVariable Long id,
-                                                       @Valid @RequestBody Instructor instructor) {
+                                                       @Valid @RequestBody InstructorRequest req) {
+        Instructor instructor = new Instructor();
+        instructor.setName(req.getName());
+        instructor.setEmail(req.getEmail());
         return new ResponseEntity<>(instructorService.updateInstructor(id, instructor), HttpStatus.OK);
     }
 
