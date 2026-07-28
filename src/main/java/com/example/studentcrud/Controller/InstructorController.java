@@ -4,7 +4,7 @@ import com.example.studentcrud.Controller.dto.InstructorRequest;
 import com.example.studentcrud.Controller.dto.InstructorResponse;
 import com.example.studentcrud.Entity.Instructor;
 import com.example.studentcrud.Service.InstructorService;
-import com.example.studentcrud.Mapper.EntityToResponseMapper;
+import com.example.studentcrud.Mapper.InstructorMapper;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,23 +20,26 @@ public class InstructorController {
     @Autowired
     private InstructorService instructorService;
 
+    @Autowired
+    private InstructorMapper instructorMapper;
+
     @PostMapping
     public ResponseEntity<InstructorResponse> saveInstructor(@Valid @RequestBody InstructorRequest req) {
         Instructor instructor = new Instructor();
         instructor.setName(req.getName());
         instructor.setEmail(req.getEmail());
         Instructor savedInstructor = instructorService.saveInstructor(instructor);
-        return new ResponseEntity<>(EntityToResponseMapper.toInstructorResponse(savedInstructor), HttpStatus.CREATED);
+        return new ResponseEntity<>(instructorMapper.toResponse(savedInstructor), HttpStatus.CREATED);
     }
 
     @GetMapping
     public ResponseEntity<List<InstructorResponse>> getAllInstructors() {
-        return new ResponseEntity<>(EntityToResponseMapper.toInstructorResponseList(instructorService.getAllInstructors()), HttpStatus.OK);
+        return new ResponseEntity<>(instructorMapper.toResponseList(instructorService.getAllInstructors()), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<InstructorResponse> getById(@PathVariable Long id) {
-        return new ResponseEntity<>(EntityToResponseMapper.toInstructorResponse(instructorService.getByInstructorId(id)), HttpStatus.OK);
+        return new ResponseEntity<>(instructorMapper.toResponse(instructorService.getByInstructorId(id)), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
@@ -45,7 +48,7 @@ public class InstructorController {
         Instructor instructor = new Instructor();
         instructor.setName(req.getName());
         instructor.setEmail(req.getEmail());
-        return new ResponseEntity<>(EntityToResponseMapper.toInstructorResponse(instructorService.updateInstructor(id, instructor)), HttpStatus.OK);
+        return new ResponseEntity<>(instructorMapper.toResponse(instructorService.updateInstructor(id, instructor)), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

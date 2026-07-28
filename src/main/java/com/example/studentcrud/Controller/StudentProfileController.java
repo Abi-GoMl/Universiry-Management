@@ -6,7 +6,7 @@ import com.example.studentcrud.Entity.Student;
 import com.example.studentcrud.Entity.StudentProfile;
 import com.example.studentcrud.Service.StudentProfileService;
 import com.example.studentcrud.Service.StudentService;
-import com.example.studentcrud.Mapper.EntityToResponseMapper;
+import com.example.studentcrud.Mapper.StudentProfileMapper;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,6 +25,9 @@ public class StudentProfileController {
     @Autowired
     private StudentService studentService;
 
+    @Autowired
+    private StudentProfileMapper profileMapper;
+
     @PostMapping
     public ResponseEntity<StudentProfileResponse> saveStudentProfile(@Valid @RequestBody StudentProfileRequest req) {
         StudentProfile profile = new StudentProfile();
@@ -35,17 +38,17 @@ public class StudentProfileController {
             profile.setStudent(s);
         }
         StudentProfile savedStudentProfile = studentProfileService.saveStudentProfile(profile);
-        return new ResponseEntity<>(EntityToResponseMapper.toStudentProfileResponse(savedStudentProfile), HttpStatus.CREATED);
+        return new ResponseEntity<>(profileMapper.toResponse(savedStudentProfile), HttpStatus.CREATED);
     }
 
     @GetMapping
     public ResponseEntity<List<StudentProfileResponse>> getAllStudentProfiles() {
-        return new ResponseEntity<>(EntityToResponseMapper.toStudentProfileResponseList(studentProfileService.getAllStudentProfiles()), HttpStatus.OK);
+        return new ResponseEntity<>(profileMapper.toResponseList(studentProfileService.getAllStudentProfiles()), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<StudentProfileResponse> getById(@PathVariable Long id) {
-        return new ResponseEntity<>(EntityToResponseMapper.toStudentProfileResponse(studentProfileService.getById(id)), HttpStatus.OK);
+        return new ResponseEntity<>(profileMapper.toResponse(studentProfileService.getById(id)), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
@@ -58,7 +61,7 @@ public class StudentProfileController {
             Student s = studentService.getByStudentId(req.getStudentId());
             profile.setStudent(s);
         }
-        return new ResponseEntity<>(EntityToResponseMapper.toStudentProfileResponse(studentProfileService.updateStudentProfile(id, profile)), HttpStatus.OK);
+        return new ResponseEntity<>(profileMapper.toResponse(studentProfileService.updateStudentProfile(id, profile)), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

@@ -6,7 +6,7 @@ import com.example.studentcrud.Entity.Course;
 import com.example.studentcrud.Entity.Department;
 import com.example.studentcrud.Entity.Instructor;
 import com.example.studentcrud.Service.CourseService;
-import com.example.studentcrud.Mapper.EntityToResponseMapper;
+import com.example.studentcrud.Mapper.CourseMapper;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,6 +22,9 @@ public class CourseController {
     @Autowired
     private CourseService courseService;
 
+    @Autowired
+    private CourseMapper courseMapper;
+
     @PostMapping
     public ResponseEntity<CourseResponse> saveCourse(@Valid @RequestBody CourseRequest req) {
         Course course = new Course();
@@ -35,17 +38,17 @@ public class CourseController {
             Instructor i = new Instructor(); i.setId(req.getInstructorId()); course.setInstructor(i);
         }
         Course savedCourse = courseService.saveCourse(course);
-        return new ResponseEntity<>(EntityToResponseMapper.toCourseResponse(savedCourse), HttpStatus.CREATED);
+        return new ResponseEntity<>(courseMapper.toResponse(savedCourse), HttpStatus.CREATED);
     }
 
     @GetMapping
     public ResponseEntity<List<CourseResponse>> getAllCourses() {
-        return new ResponseEntity<>(EntityToResponseMapper.toCourseResponseList(courseService.getAllCourses()), HttpStatus.OK);
+        return new ResponseEntity<>(courseMapper.toResponseList(courseService.getAllCourses()), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<CourseResponse> getById(@PathVariable Long id) {
-        return new ResponseEntity<>(EntityToResponseMapper.toCourseResponse(courseService.getByCourseId(id)), HttpStatus.OK);
+        return new ResponseEntity<>(courseMapper.toResponse(courseService.getByCourseId(id)), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
@@ -61,7 +64,7 @@ public class CourseController {
         if (req.getInstructorId() != null) {
             Instructor i = new Instructor(); i.setId(req.getInstructorId()); course.setInstructor(i);
         }
-        return new ResponseEntity<>(EntityToResponseMapper.toCourseResponse(courseService.updateCourse(id, course)), HttpStatus.OK);
+        return new ResponseEntity<>(courseMapper.toResponse(courseService.updateCourse(id, course)), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
